@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -35,16 +35,11 @@ public class ExcelManager {
 			f = new FileInputStream(new File("Config.xlsx"));
 			this.workbook = new XSSFWorkbook(f);
 			this.sheet = workbook.getSheet("Config");
+			f.close();
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(ExcelManager.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(ExcelManager.class.getName()).log(Level.SEVERE, null, ex);
 		} catch (IOException ex) {
-			Logger.getLogger(ExcelManager.class.getName()).log(Level.WARN, null, ex);
-		} finally {
-			try {
-				f.close();
-			} catch (IOException ex) {
-				Logger.getLogger(ExcelManager.class.getName()).log(Level.WARN, null, ex);
-			}
+			Logger.getLogger(ExcelManager.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
@@ -64,9 +59,14 @@ public class ExcelManager {
 				map.put(df.formatCellValue(row.getCell(0)), df.formatCellValue(row.getCell(1)).toString());
 			}
 		}
-
+		try {
+			workbook.close();
+		} catch (IOException ex) {
+			Logger.getLogger(ExcelManager.class.getName()).log(Level.WARNING, null, ex);
+		}
 		return map;
 	}
+
 	/**
 	 * This method is used to kill all the processes running all web driver
 	 * server if any is running as system processes.
@@ -81,23 +81,21 @@ public class ExcelManager {
 		while (rowIterator.hasNext()) {
 			Row row = rowIterator.next();
 			if (row.getRowNum() != 0) {
-				String a[]=df.formatCellValue(row.getCell(4)).split("/");
-				Site site=new SiteBuilder(df.formatCellValue(row.getCell(0)))
-						.setUsername(df.formatCellValue(row.getCell(1)))
-						.setPassword(df.formatCellValue(row.getCell(2)))
+				String a[] = df.formatCellValue(row.getCell(4)).split("/");
+				Site site = new SiteBuilder(df.formatCellValue(row.getCell(0)))
+						.setUsername(df.formatCellValue(row.getCell(1))).setPassword(df.formatCellValue(row.getCell(2)))
 						.setFolderName(df.formatCellValue(row.getCell(5)))
 						.setUserAgent(df.formatCellValue(row.getCell(3)))
-						.setViewPortHeight(a.length==1?0:Integer.parseInt(a[1]))
-						.setViewPortWidth(a.length==1?0:Integer.parseInt(a[0]))
-						.setCrawling(Boolean.parseBoolean(df.formatCellValue(row.getCell(6)).toLowerCase()))
-						.build();
+						.setViewPortHeight(a.length <= 1 ? 0 : Integer.parseInt(a[1]))
+						.setViewPortWidth(a.length <= 1 ? 0 : Integer.parseInt(a[0]))
+						.setCrawling(Boolean.parseBoolean(df.formatCellValue(row.getCell(6)).toLowerCase())).build();
 				list.add(site);
 			}
 		}
 		try {
 			workbook.close();
 		} catch (IOException ex) {
-			Logger.getLogger(ExcelManager.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(ExcelManager.class.getName()).log(Level.WARNING, null, ex);
 		}
 		return list;
 	}

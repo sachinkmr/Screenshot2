@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.apache.http.HttpResponse;
 
+import sachin.bws.helpers.Config;
 import sachin.bws.helpers.HelperClass;
 import sachin.spider.SpiderConfig;
 import sachin.spider.WebSpider;
@@ -59,10 +60,11 @@ public class Finder extends WebSpider {
 
 	@Override
 	public void handleLink(WebURL webUrl, HttpResponse response, int statusCode, String statusDescription) {
-		if (statusCode > 400 || statusCode == 200) {
+		if (!(statusCode >= 300 && statusCode < 400)) {
 			String url = webUrl.getUrl();
 			map.put(url, new LinkInfo(url));
 			System.out.println("Added: " + url);
+			// System.out.println(statusCode + " : " + webUrl.getUrl());
 		}
 	}
 
@@ -71,24 +73,22 @@ public class Finder extends WebSpider {
 		config.setConnectionRequestTimeout(site.getTimeout());
 		config.setConnectionTimeout(site.getTimeout());
 		config.setSocketTimeout(site.getTimeout());
-		config.setTotalSpiders(5);
+		config.setTotalSpiders(Config.THREADS_TO_CRAWL);
 		config.setAuthenticate(site.hasAuthentication());
 		config.setUsername(site.getUsername());
 		config.setPassword(site.getPassword());
 		config.setUserAgentString(site.getUserAgent());
 		try {
-			if (site.isCrawling() && !HelperClass.crawlingDataExists(site.getHost())) {
-				HelperClass.deleteCrawlingData(site.getHost());
+			if (site.isCrawling()) {
 				config.start(this, config);
 				HelperClass.saveCrawlingData(map, site.getHost());
 			} else {
-				if (HelperClass.crawlingDataExists(site.getHost())){
+				if (HelperClass.crawlingDataExists(site.getHost())) {
 					map = HelperClass.readCrawlingData(site.getHost());
-				}else{
+				} else {
 					config.start(this, config);
 					HelperClass.saveCrawlingData(map, site.getHost());
 				}
-
 			}
 			Thread.sleep(20000);
 			siteInfo.put("unique", unique);

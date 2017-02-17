@@ -21,14 +21,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 
 import sachin.bws.site.LinkInfo;
 import sachin.bws.site.UrlLink;
-
 
 /**
  *
@@ -36,33 +35,29 @@ import sachin.bws.site.UrlLink;
  */
 public class HelperClass {
 
-
-
-
-    /**
-     * To save crawled data to a JSON file for a site. Site host name is
-     * provided as input
-     *
-     * @param links List of UrlLink of the site after crawling
-     * @param host name of host of the site.
-     */
-    public static synchronized void saveCrawlingData(List<UrlLink> links, String host) {
-        host=HelperClass.getCrawledDataFilename(host);
-        try {
-            File f = new File(getCrawledDataRepository(host), host);
-            try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
-                oos.writeObject(links);
-                oos.close();
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
-        }
-    }
-
-
-
+	/**
+	 * To save crawled data to a JSON file for a site. Site host name is
+	 * provided as input
+	 *
+	 * @param links
+	 *            List of UrlLink of the site after crawling
+	 * @param host
+	 *            name of host of the site.
+	 */
+	public static synchronized void saveCrawlingData(List<UrlLink> links, String host) {
+		host = HelperClass.getCrawledDataFilename(host);
+		try {
+			File f = new File(getCrawledDataRepository(host), host);
+			try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f))) {
+				oos.writeObject(links);
+				oos.close();
+			}
+		} catch (FileNotFoundException ex) {
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
+		} catch (IOException ex) {
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
+		}
+	}
 
 	/**
 	 * Method to get modified host name. return host does not contain .com, www.
@@ -76,7 +71,7 @@ public class HelperClass {
 		try {
 			url = new URL(url).getHost().toLowerCase();
 		} catch (MalformedURLException ex) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
 		}
 		url = url.contains("www.") ? url.replaceAll("www.", "") : url;
 		url = url.contains(".com") ? url.replaceAll(".com", "") : url;
@@ -176,7 +171,7 @@ public class HelperClass {
 		try {
 			site = new URL(site).getHost();
 		} catch (MalformedURLException ex) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
 		}
 		site = site.contains("m.") ? site.replace("m.", "m-") : site;
 		site = site.substring(0, site.indexOf("."));
@@ -191,9 +186,9 @@ public class HelperClass {
 				oos.close();
 			}
 		} catch (FileNotFoundException ex) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
 		} catch (IOException ex) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
 		}
 	}
 
@@ -207,7 +202,7 @@ public class HelperClass {
 				ois.close();
 			}
 		} catch (IOException | ClassNotFoundException ex) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
 		}
 		return map;
 	}
@@ -222,21 +217,20 @@ public class HelperClass {
 		try {
 			FileUtils.forceDelete(f);
 		} catch (IOException ex) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, ex);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, ex);
 		}
 	}
 
-	public static void writeUrlInfo(String dir, Map<String, LinkInfo> map,String unique) {
-		File f = new File(dir, unique+".txt");
+	public static void writeUrlInfo(String dir, Map<String, LinkInfo> map, String unique) {
+		File f = new File(dir, unique + ".txt");
 		Set<String> set = new TreeSet<>();
 		for (String str : map.keySet())
 			set.add(str.hashCode() + "\u0009" + str);
 		try {
 			FileUtils.writeLines(f, "UTF-8", set, false);
 		} catch (IOException e) {
-			Logger.getLogger(HelperClass.class.getName()).log(Level.WARN, null, e);
+			Logger.getLogger(HelperClass.class.getName()).log(Level.WARNING, null, e);
 		}
 	}
-
 
 }

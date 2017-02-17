@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 import sachin.bws.helpers.ExcelManager;
 
 /*
@@ -23,32 +22,15 @@ public class Entry {
 			List<Site> list = new ExcelManager().getSiteName();
 			for (Site BWSsite : list) {
 				System.out.println("Running For: " + BWSsite.getUrl());
-					if (BWSsite.isRunning()) {
-						new Finder(BWSsite).go(BWSsite.getFolderName());
-					} else {
-						System.out.println("Site is not running. Giving " + BWSsite.getStatusCode()
-								+ " status code. Please verify");
-					}
-					if (BWSsite.isRunning()) {
-						new Finder(BWSsite).go(BWSsite.getFolderName());
-					} else {
-						System.out.println("Site is not running. Giving " + BWSsite.getStatusCode()
-								+ " status code. Please verify");
-					}
-					if (BWSsite.isRunning()) {
-						new Finder(BWSsite).go(BWSsite.getFolderName());
-					} else {
-						System.out.println("Site is not running. Giving " + BWSsite.getStatusCode()
-								+ " status code. Please verify");
-					}
-					if (BWSsite.isRunning()) {
-						new Finder(BWSsite).go(BWSsite.getFolderName());
-					} else {
-						System.out.println("Site is not running. Giving " + BWSsite.getStatusCode()
-								+ " status code. Please verify");
-					}
+				if (BWSsite.isRunning()) {
+					new Finder(BWSsite).go(BWSsite.getFolderName());
+				} else {
+					System.out.println(
+							"Site is not running. Giving " + BWSsite.getStatusCode() + " status code. Please verify");
+				}
 				System.out.println("====================================================================");
 			}
+			// FileUtils.forceDelete(new File("Data"));
 		} catch (Exception e) {
 			Logger.getLogger(Finder.class.getName()).log(Level.SEVERE, null, e);
 		}

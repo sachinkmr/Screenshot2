@@ -14,9 +14,9 @@ public class TestNG {
 
 	@BeforeSuite(alwaysRun = true)
 	public void setUp() {
-		site = new SiteBuilder("http://lipton-uat.unileversolutions.com").setTimeout(120).setUsername("wlnonproduser").setPassword("Pass@word11").build();
-		builder = site.hasAuthentication() ? new WebDriverBuilder(site.getUsername(), site.getPassword())
-				: new WebDriverBuilder();
+		site = new SiteBuilder("http://lipton-uat.unileversolutions.com").setTimeout(120).setUsername("wlnonproduser")
+				.setPassword("Pass@word11").build();
+		builder = new WebDriverBuilder();
 		driver = builder.getDriver(site);
 	}
 
@@ -27,7 +27,7 @@ public class TestNG {
 
 	@AfterSuite(alwaysRun = true)
 	public void tearDown() {
-//		builder.destroy();
+		 builder.destroy();
 		WebDriverBuilder.killServers();
 	}
 
